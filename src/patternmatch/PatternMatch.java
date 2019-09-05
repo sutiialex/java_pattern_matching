@@ -1,104 +1,50 @@
 package patternmatch;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class PatternMatch {
+    public static <T, V1 extends T, R> R match(final T t, final Case<V1, R> c1, final Default<R> defaultF) {
+        return oMatch(t, c1).orElseGet(defaultF.f);
+    }
+
     public static <T, V1 extends T, V2 extends T, R> R match(final T t, final Case
             <V1, R> c1, final Case<V2, R> c2, final Default<R> defaultF) {
-        if (c1.type.equals(t.getClass())) {
-            return c1.f.apply((V1) t);
-        } else if (c2.type.equals(t.getClass())) {
-            return c2.f.apply((V2) t);
-        } else {
-            return defaultF.f.get();
-        }
+        return oMatch(t, c1).orElseGet(() -> match(t, c2, defaultF));
     }
 
     public static <T, V1 extends T, V2 extends T, V3 extends T, R> R match(final T t, final Case
             <V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Default<R> defaultF) {
-        if (c1.type.equals(t.getClass())) {
-            return c1.f.apply((V1) t);
-        } else if (c2.type.equals(t.getClass())) {
-            return c2.f.apply((V2) t);
-        } else if (c3.type.equals(t.getClass())) {
-            return c3.f.apply((V3) t);
-        } else {
-            return defaultF.f.get();
-        }
+        return oMatch(t, c1).orElseGet(() -> match(t, c2, c3, defaultF));
     }
 
     public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, R> R match(final T t, final Case
             <V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4, final Default<R> defaultF) {
-        if (c1.type.equals(t.getClass())) {
-            return c1.f.apply((V1) t);
-        } else if (c2.type.equals(t.getClass())) {
-            return c2.f.apply((V2) t);
-        } else if (c3.type.equals(t.getClass())) {
-            return c3.f.apply((V3) t);
-        } else if (c4.type.equals(t.getClass())) {
-            return c4.f.apply((V4) t);
-        } else {
-            return defaultF.f.get();
-        }
+        return oMatch(t, c1).orElseGet(() -> match(t, c2, c3, c4, defaultF));
     }
 
-    public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, V5 extends T, R> R match(final T t, final Case
-            <V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4, final Case<V5, R> c5, final Default<R> defaultF) {
-        if (c1.type.equals(t.getClass())) {
-            return c1.f.apply((V1) t);
-        } else if (c2.type.equals(t.getClass())) {
-            return c2.f.apply((V2) t);
-        } else if (c3.type.equals(t.getClass())) {
-            return c3.f.apply((V3) t);
-        } else if (c4.type.equals(t.getClass())) {
-            return c4.f.apply((V4) t);
-        } else if (c5.type.equals(t.getClass())) {
-            return c5.f.apply((V5) t);
-        } else {
-            return defaultF.f.get();
-        }
+    public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, V5 extends T, R> R match(
+            final T t, final Case<V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4,
+            final Case<V5, R> c5, final Default<R> defaultF) {
+        return oMatch(t, c1).orElseGet(() -> match(t, c2, c3, c4, c5, defaultF));
     }
 
-    public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, V5 extends T, V6 extends T, R> R match(final T t, final Case
-            <V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4, final Case<V5, R> c5, final Case<V6, R> c6, final Default<R> defaultF) {
-        if (c1.type.equals(t.getClass())) {
-            return c1.f.apply((V1) t);
-        } else if (c2.type.equals(t.getClass())) {
-            return c2.f.apply((V2) t);
-        } else if (c3.type.equals(t.getClass())) {
-            return c3.f.apply((V3) t);
-        } else if (c4.type.equals(t.getClass())) {
-            return c4.f.apply((V4) t);
-        } else if (c5.type.equals(t.getClass())) {
-            return c5.f.apply((V5) t);
-        } else if (c6.type.equals(t.getClass())) {
-            return c6.f.apply((V6) t);
-        } else {
-            return defaultF.f.get();
-        }
+    public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, V5 extends T, V6 extends T, R> R match(
+            final T t, final Case<V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4,
+            final Case<V5, R> c5, final Case<V6, R> c6, final Default<R> defaultF) {
+        return oMatch(t, c1).orElseGet(() -> match(t, c2, c3, c4, c5, c6, defaultF));
     }
 
-    public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, V5 extends T, V6 extends T, V7 extends T, R> R match(final T t, final Case
-            <V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4, final Case<V5, R> c5, final Case<V6, R> c6, final Case<V7, R> c7, final Default<R> defaultF) {
-        if (c1.type.equals(t.getClass())) {
-            return c1.f.apply((V1) t);
-        } else if (c2.type.equals(t.getClass())) {
-            return c2.f.apply((V2) t);
-        } else if (c3.type.equals(t.getClass())) {
-            return c3.f.apply((V3) t);
-        } else if (c4.type.equals(t.getClass())) {
-            return c4.f.apply((V4) t);
-        } else if (c5.type.equals(t.getClass())) {
-            return c5.f.apply((V5) t);
-        } else if (c6.type.equals(t.getClass())) {
-            return c6.f.apply((V6) t);
-        } else if (c7.type.equals(t.getClass())) {
-            return c7.f.apply((V7) t);
-        } else {
-            return defaultF.f.get();
-        }
+    public static <T, V1 extends T, V2 extends T, V3 extends T, V4 extends T, V5 extends T, V6 extends T, V7 extends T, R> R match(
+            final T t, final Case<V1, R> c1, final Case<V2, R> c2, final Case<V3, R> c3, final Case<V4, R> c4,
+            final Case<V5, R> c5, final Case<V6, R> c6, final Case<V7, R> c7, final Default<R> defaultF) {
+        return oMatch(t, c1).orElseGet(() -> match(t, c2, c3, c4, c5, c6, c7, defaultF));
+    }
+
+    private static <T, V extends T, R> Optional<R> oMatch(final T t, final Case<V, R> c) {
+        return c.type.equals(t.getClass()) ? Optional.of(c.f.apply(c.type.cast(t))) : Optional.empty();
     }
 
     public static class Case<V, R> {
@@ -114,10 +60,10 @@ public class PatternMatch {
             return new Case<>(t, f);
         }
 
-        public static <V> Case<V, Void> stmtCase(final Class<V> t, final Consumer<V> f) {
+        public static <V> Case<V, Unit> stmtCase(final Class<V> t, final Consumer<V> f) {
             return exprCase(t, v -> {
                 f.accept(v);
-                return null;
+                return new Unit();
             });
         }
     }
@@ -133,8 +79,14 @@ public class PatternMatch {
             return new Default<>(f);
         }
 
-        public static Default<Void> stmtDefault(final Runnable f) {
-            return exprDefault(() -> { f.run(); return null;});
+        public static Default<Unit> stmtDefault(final Runnable f) {
+            return exprDefault(() -> {
+                f.run();
+                return new Unit();
+            });
         }
+    }
+
+    private static class Unit {
     }
 }
