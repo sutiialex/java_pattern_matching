@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.max;
-import static patternmatch.PatternMatch.Case.exprCase;
-import static patternmatch.PatternMatch.Case.stmtCase;
-import static patternmatch.PatternMatch.Default.exprDefault;
-import static patternmatch.PatternMatch.Default.stmtDefault;
-import static patternmatch.PatternMatch.match;
+import static patternmatch.patternmatch.PatternMatch.Case.exprCase;
+import static patternmatch.patternmatch.PatternMatch.Case.stmtCase;
+import static patternmatch.patternmatch.PatternMatch.Default.exprDefault;
+import static patternmatch.patternmatch.PatternMatch.Default.stmtDefault;
+import static patternmatch.patternmatch.PatternMatch.match;
 
-public class Foo {
+public class Main {
     public static void main(final String[] args) {
         final Node<Integer> tree =
                 new InternalNode<>(
@@ -33,22 +33,6 @@ public class Foo {
         System.out.println("Leaves: " + getLeaves(tree));
     }
 
-    private static <V> int countDepth(final Node<V> node) {
-        return match(node,
-                exprCase(InternalNode.class, n -> 1 + max(countDepth(n.left), countDepth(n.right))),
-                exprCase(Leaf.class, n -> 1),
-                exprDefault(() -> { throw new RuntimeException("node not known: " + node); }));
-    }
-
-    private static <V> List<V> getLeaves(final Node<V> node) {
-        return match(node,
-                exprCase(InternalNode.class, n -> Stream.of(getLeaves(((InternalNode<V>) n).left),
-                        getLeaves(((InternalNode<V>) n).right))
-                        .flatMap(Collection::stream).collect(Collectors.toList())),
-                exprCase(Leaf.class, l -> Collections.singletonList(((Leaf<V>) l).value)),
-                exprDefault(() -> { throw new RuntimeException(); }));
-    }
-
     private static <V> void printTree(final Node<V> node) {
         match(node,
                 stmtCase(InternalNode.class, n -> {
@@ -58,9 +42,25 @@ public class Foo {
                     printTree(n.right);
                     System.out.print(")");
                 }),
-                stmtCase(Leaf.class, l -> {
-                    System.out.print(l.value);
-                }),
+                stmtCase(Leaf.class, l -> System.out.print(l.value)),
                 stmtDefault(() -> { }));
+    }
+
+    private static <V> int countDepth(final Node<V> node) {
+        return match(node,
+                exprCase(InternalNode.class, n -> 1 + max(countDepth(n.left), countDepth(n.right))),
+                exprCase(Leaf.class, n -> 1),
+                exprDefault(() -> { throw new RuntimeException("node not known: " + node); }));
+    }
+
+    private static <V> List<V> getLeaves(final Node<V> node) {
+        return match(node,
+                exprCase(InternalNode.class, n ->
+                        // Because of the type erasure in Java, classes with generics have to be casted explicitly.
+                        Stream.of(getLeaves(((InternalNode<V>) n).left), getLeaves(((InternalNode<V>) n).right))
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toList())),
+                exprCase(Leaf.class, l -> Collections.singletonList(((Leaf<V>) l).value)),
+                exprDefault(() -> { throw new RuntimeException(); }));
     }
 }

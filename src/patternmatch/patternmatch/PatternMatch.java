@@ -1,4 +1,4 @@
-package patternmatch;
+package patternmatch.patternmatch;
 
 import java.util.Optional;
 import java.util.function.Consumer;
