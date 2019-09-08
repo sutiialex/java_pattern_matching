@@ -1,7 +1,7 @@
 package patternmatch;
 
 import patternmatch.Node.InternalNode;
-import patternmatch.Node.Leaf;
+import patternmatch.Node.LeafNode;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,16 +21,16 @@ public class Main {
         final Node<Integer> tree =
                 new InternalNode<>(
                     new InternalNode<>(
-                            new Leaf<>(3),
+                            new LeafNode<>(3),
                             new InternalNode<>(
-                                    new Leaf<>(4),
-                                    new Leaf<>(6))),
-                    new Leaf<>(8));
+                                    new LeafNode<>(4),
+                                    new LeafNode<>(6))),
+                    new LeafNode<>(8));
 
         printTree(tree);
         System.out.println();
-        System.out.println("Depth: " + countDepth(tree));
-        System.out.println("Leaves: " + getLeaves(tree));
+        System.out.println("Tree depth: " + treeDepth(tree));
+        System.out.println("Leave values: " + getLeaves(tree));
     }
 
     private static <V> void printTree(final Node<V> node) {
@@ -42,14 +42,14 @@ public class Main {
                     printTree(n.right);
                     System.out.print(")");
                 }),
-                stmtCase(Leaf.class, l -> System.out.print(l.value)),
+                stmtCase(LeafNode.class, l -> System.out.print(l.value)),
                 stmtDefault(() -> { }));
     }
 
-    private static <V> int countDepth(final Node<V> node) {
+    private static <V> int treeDepth(final Node<V> node) {
         return match(node,
-                exprCase(InternalNode.class, n -> 1 + max(countDepth(n.left), countDepth(n.right))),
-                exprCase(Leaf.class, n -> 1),
+                exprCase(InternalNode.class, n -> 1 + max(treeDepth(n.left), treeDepth(n.right))),
+                exprCase(LeafNode.class, n -> 1),
                 exprDefault(() -> { throw new RuntimeException("node not known: " + node); }));
     }
 
@@ -60,7 +60,7 @@ public class Main {
                         Stream.of(getLeaves(((InternalNode<V>) n).left), getLeaves(((InternalNode<V>) n).right))
                                 .flatMap(Collection::stream)
                                 .collect(Collectors.toList())),
-                exprCase(Leaf.class, l -> Collections.singletonList(((Leaf<V>) l).value)),
+                exprCase(LeafNode.class, l -> Collections.singletonList(((LeafNode<V>) l).value)),
                 exprDefault(() -> { throw new RuntimeException(); }));
     }
 }

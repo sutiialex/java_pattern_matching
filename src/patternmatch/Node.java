@@ -11,10 +11,10 @@ interface Node<T> {
         }
     }
 
-    class Leaf<T> implements Node<T> {
+    class LeafNode<T> implements Node<T> {
         public final T value;
 
-        public Leaf(final T value) {
+        public LeafNode(final T value) {
             this.value = value;
         }
     }
